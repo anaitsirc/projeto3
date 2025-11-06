@@ -1,6 +1,6 @@
-import { SpectrumVisualization } from "SpectrumVisualization.js";
-import { WaveformVisualization } from "WaveformVisualization.js";
-import { ParticleVisualization } from "ParticleVisualization.js";
+import { SpectrumVisualization } from "./SpectrumVisualization.js";
+import { WaveformVisualization } from "./WaveformVisualization.js";
+import { ParticleVisualization } from "./ParticleVisualization.js";
 
 // Motor de Visualização
 class VisualizationEngine {
