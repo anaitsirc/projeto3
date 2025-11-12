@@ -42,7 +42,6 @@
         </section>
 
         <section id="visualization-area">
-          <!-- CORREÇÃO: Canvas com ID correto e dimensões -->
           <canvas
             id="audioCanvas"
             width="800"
@@ -52,6 +51,10 @@
           <div id="audioInfo">
             <p id="audioStatus">Áudio: Parado</p>
             <p id="audioLevel">Nível: 0%</p>
+            <div class="level-meter">
+              <div class="level-bar"></div>
+              <span class="level-text">0%</span>
+            </div>
           </div>
         </section>
 
@@ -72,7 +75,6 @@
       </div>
     </div>
 
-    <!-- CORREÇÃO: Caminho correto para App.js na pasta js/ -->
     <script type="module" src="js/App.js"></script>
   </body>
 </html>
