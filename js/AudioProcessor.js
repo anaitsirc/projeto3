@@ -1,4 +1,5 @@
 // Processamento de Áudio
+
 class AudioProcessor {
   constructor() {
     //AudioContext | contexto de audio (sound) - controla tudo relacionado com audio "You need to create an AudioContext before you do anything else, as everything happens inside a context. (...) reuse it"
@@ -13,30 +14,40 @@ class AudioProcessor {
     this.mediaStream = null;
     this.isPlaying = false;
     this.source = null;
+
+    this.frequencyData.fill(0);
+    this.waveformData.fill(128);
   }
+  //Captura de áudio via microfone com tratamento de permissões
 
   //Devolver Promise é garantir que a função retorna algo que o js pode esperar terminar no futuro; ao usar async, isso já acontece automaticamente
   // (via async/await) - permite lidar com operações assíncronas como pedir o microfone ou ler ficheiros
   async startMicrophone() {
     // TODO: iniciar captura do microfone (ou fonte de som MediaStreamSource)
 
+    //Verifica se o áudio está suspenso e acorda-o
+    if (this.audioContext.state !== "running") {
+      await this.audioContext.resume();
+    }
     // espera poder capturar micro
     this.mediaStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
     });
     this.source = this.audioContext.createMediaStreamSource(this.mediaStream); // cria fonte (MediaStreamSource) referente ao micro
     this.source.connect(this.analyser); // ligar fonte com o analisador
+    this.analyser.connect(this.audioContext.destination); // Ligado à saída de som (colunas)
 
     this.isPlaying = true; //atualizar estado
 
     console.log("Iniciando captura do microfone...");
-    // Devolver Promise - "represents the eventual completion (or failure) of an asynchronous operation and its resulting value."
+    // Devolver Promise - "representa a conclusão eventual:descreve o fato de que a operação assíncrona terminou (seja audio ou um falha) de uma operação assíncrona e seu valor resultante."
   }
 
+  // Carregamento e análise de ficheiros de áudio (WAV)
   async loadAudioFile(file) {
     // TODO: carregar ficheiro de áudio
 
-    const promiseBuffer = await file.arrayBuffer(); // le o file em bin: arrayBuffer() "returns a Promise that resolves with the contents of the blob as binary data contained in an ArrayBuffer"
+    const promiseBuffer = await file.arrayBuffer(); // le o file em bin: retorna uma Promise que se resolve com o conteúdo do blob(objeto que representa um arquivo ou dado bruto imutável) como dados binários contidos em um ArrayBuffer."
     const audioBuffer = await this.audioContext.decodeAudioData(promiseBuffer); //decodifica o áudio (transforma em dados compreensíveis pelo AudioContext)
 
     this.source = this.audioContext.createBufferSource(); // cria fonte (BufferSource) referente ao file decodificado
@@ -58,16 +69,29 @@ class AudioProcessor {
     if (this.mediaStream) {
       // pra som de micro - mediaStream contém uma ou mais tracks
       this.mediaStream.getTracks().forEach((track) => track.stop()); //parar cada track -> parar realmente a captação de som, libertar o hardware, e evitar que o microfone continue ativo em background
+
+      this.mediaStream = null;
     }
+    // Se houver uma fonte de áudio ativa (do microfone ou de um ficheiro)
     if (this.source) {
-      // pra som de audio file
+      // Desconectar o source do analyser
+      this.source.disconnect(this.analyser);
+      // Tentar parar a fonte (funciona para BufferSource mas não faz mal para MediaStreamSource)
       if (this.source.stop) this.source.stop();
+      this.source = null;
     }
+
+    // Desconectar o analyser do destino (necessário para o Audio File)
+    if (this.analyser.numberOfOutputs > 0) {
+      this.analyser.disconnect(this.audioContext.destination);
+    }
+
     this.isPlaying = false;
 
     console.log("Parando processamento de áudio...");
   }
 
+  //Processamento de dados de frequência e waveform em tempo real
   update() {
     // TODO: atualizar dados de áudio
     if (!this.analyser || !this.isPlaying) return;
