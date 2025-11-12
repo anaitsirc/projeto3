@@ -10,10 +10,12 @@ class ExportManager {
 
     try {
       const canvas = this.visualizationEngine.canvas;
-      const link = document.createElement("a");
-      link.download = `audio-visualization-${new Date().getTime()}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+      const $link = $("<a>").attr({
+        //criaçao do link
+        download: `audio-visualization-${new Date().getTime()}.png`,
+        href: canvas.toDataURL("image/png"),
+      });
+      $link[0].click();
     } catch (error) {
       console.error("Erro ao exportar PNG:", error);
     }
@@ -25,10 +27,12 @@ class ExportManager {
 
     try {
       const canvas = this.visualizationEngine.canvas;
-      const link = document.createElement("a");
-      link.download = `audio-visualization-${new Date().getTime()}.jpg`;
-      link.href = canvas.toDataURL("image/jpeg", quality);
-      link.click();
+      const $link = $("<a>").attr({
+        //criaçao do link
+        download: `audio-visualization-${new Date().getTime()}.jpg`,
+        href: canvas.toDataURL("image/jpeg", quality),
+      });
+      $link[0].click();
     } catch (error) {
       console.error("Erro ao exportar JPEG:", error);
     }

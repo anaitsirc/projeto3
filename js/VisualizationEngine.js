@@ -5,38 +5,38 @@ import { ParticleVisualization } from "./ParticleVisualization.js";
 // Motor de Visualização
 class VisualizationEngine {
   constructor(canvasId) {
-    this.canvas = document.getElementById(canvasId);
-    this.ctx = this.canvas.getContext("2d");
-    this.visualizations = new Map();
+    //config canvas para renderizaçao
+    this.canvas = $(`#${canvasId}`).get(0); //po elemnto html para desenhar
+    this.ctx = this.canvas.getContext("2d"); //o contexto de visualizaçao/renderizaçao
+    this.visualizations = new Map(); //mapear diferentes tipos de visualização
     this.currentVisualization = null;
-    this.animationId = null;
+    this.animationId = null; //id para controlar animaçao
     this.isRunning = false;
-    this.audioProcessor = null; // Inicializar como null
 
-    // CORREÇÃO: Não inicializar visualizações aqui - vamos fazer depois
+    this.audioProcessor = null; // Referência ao processador de áudio (inicializado depois)
+
     // this.initVisualizations();
-    // this.setVisualization("spectrum");
   }
 
   setAudioProcessor(audioProcessor) {
+    // Define o processador de áudio e inicializa as visualizações
+
     this.audioProcessor = audioProcessor;
-    console.log("🟢 AudioProcessor definido no VisualizationEngine");
-    
-    // CORREÇÃO: Só agora inicializar as visualizações
+
+    // Inicializa as visualizações apenas quando o audioProcessor estiver disponível
     this.initVisualizations();
-    this.setVisualization("spectrum");
+    this.setVisualization("spectrum"); //visualizaçao default
   }
 
   initVisualizations() {
-    // CORREÇÃO: Agora o audioProcessor não é null
-    console.log("🟢 Inicializando visualizações com audioProcessor:", !!this.audioProcessor);
-    
+    // Cria instâncias de cada tipo de visualização passando o canvas e audioProcessor
+
     this.visualizations.set(
       "spectrum",
       new SpectrumVisualization(this.canvas, this.audioProcessor)
     );
     this.visualizations.set(
-      "waveform", 
+      "waveform",
       new WaveformVisualization(this.canvas, this.audioProcessor)
     );
     this.visualizations.set(
@@ -45,30 +45,30 @@ class VisualizationEngine {
     );
   }
 
+  setVisualization(type) {
+    // Altera o tipo de visualização ativa
 
-
- setVisualization(type) {
     if (this.visualizations.has(type)) {
       this.currentVisualization = this.visualizations.get(type);
-      console.log(`🟢 Visualização alterada para: ${type}`);
+      console.log(`Visualização definida: ${type}`);
       return true;
     }
-    console.error(`❌ Tipo de visualização não encontrado: ${type}`);
     return false;
   }
 
   draw(freqData, waveData) {
+    // Método principal de renderização - chamado a cada frame
+
     if (this.currentVisualization) {
-      this.currentVisualization.update();
-      this.currentVisualization.draw();
+      this.currentVisualization.update(); // atualização dos dados
+      this.currentVisualization.draw(); //atualizaçao visual
     }
   }
 
   clearCanvas() {
     this.ctx.fillStyle = "#121226";
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height); //ocupa o canvas todo
   }
-
 
   start() {
     // TODO: iniciar animação
@@ -89,8 +89,10 @@ class VisualizationEngine {
     }
   }
 
-  resize() {
-    // TODO: redimensionar canvas
+  resize(width, height) {
+    // Redimensiona o canvas e todas as visualizações
+    this.canvas.width = width;
+    this.canvas.height = height;
   }
 
   getVisualizationProperties() {

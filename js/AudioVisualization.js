@@ -1,5 +1,6 @@
 class AudioVisualization {
   constructor(canvas, audioProcessor) {
+    //impedir que a mae (this) seja instanciada - classe abstrata
     if (this.constructor === AudioVisualization) {
       throw new Error(
         "AudioVisualization é uma classe abstrata e não pode ser instanciada diretamente."
@@ -10,25 +11,28 @@ class AudioVisualization {
     this.ctx = canvas.getContext("2d");
     this.audioProcessor = audioProcessor;
     this.name = "Visualização";
-    this.properties = {};
+    this.properties = {
+      //porpriedades comuns a todo o tipo de visualizacçoes
+    };
     this.testData = new Uint8Array(256);
     this.frameCount = 0;
 
-    // Inicializar dados de teste
+    //DEFAULT/TEST dados de teste para quando não há áudio ativo
+    this.testData = new Uint8Array(256);
     for (let i = 0; i < this.testData.length; i++) {
-      this.testData[i] = Math.sin(i / 10) * 128 + 128;
+      this.testData[i] = Math.sin(i / 10) * 128 + 128; // Onda senoidal
     }
 
-    // CORREÇÃO: Verificar se audioProcessor existe antes de aceder
-    const numAmostras = this.audioProcessor
+    //arrays para armazenar dados de áudio em tempo real
+    const bufferSize = this.audioProcessor
       ? this.audioProcessor.analyser.frequencyBinCount
       : 256;
-    this.frequencyState = new Uint8Array(numAmostras);
-    this.waveformState = new Uint8Array(numAmostras);
+    this.frequencyState = new Uint8Array(bufferSize);
+    this.waveformState = new Uint8Array(bufferSize);
   }
 
   draw() {
-    //este método precisa de ser implementado pelas subclasses, SpectrumVizualization, waveFormVizualition e particleVizualization
+    //implementaçao obrigatória para subclasses, SpectrumVizualization, waveFormVizualition e particleVizualization
     throw new Error("Método draw() deve ser implementado pela subclasse.");
   }
 
@@ -39,13 +43,14 @@ class AudioVisualization {
       this.frequencyState = this.audioProcessor.getFrequencyData(); //DADOS ORIGINAIS (0-255)
       this.waveformState = this.audioProcessor.getWaveformData();
     } else {
+      //para quando nao ha audio
       this.frequencyState.fill(0);
       this.waveformState.fill(128); // 128 é o ponto médio para o waveform
     }
   }
 
   resize(width, height) {
-    // TODO: redimensionar visualização
+    //Redimensionar visualização (canvas) mantendo proporções
     this.canvas.width = width;
     this.canvas.height = height;
   }
@@ -58,7 +63,7 @@ class AudioVisualization {
   updateProperty(property, value) {
     // TODO: atualizar propriedade
     if (this.properties.hasOwnProperty(property)) {
-      this.properties[property] = value;
+      this.properties[property].value = parseFloat(value); // isto atualiza apenas o valor
       return true; //ocorreu a atualização
     }
     return false; //falha na atualização
