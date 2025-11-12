@@ -5,8 +5,11 @@ class UIManager {
     this.visualizationEngine = app.visualizationEngine;
     this.audioProcessor = app.audioProcessor;
 
-    // Inicializar interface
-    this.setupEventListeners();
+    // CORREÇÃO: Esperar que o DOM esteja pronto com jQuery
+    $(document).ready(() => {
+      console.log("🟢 DOM Pronto - Configurando event listeners...");
+      this.setupEventListeners();
+    });
   }
 
   updatePropertiesPanel() {
@@ -16,78 +19,107 @@ class UIManager {
 
   updateAudioInfo(info, isError = false) {
     // TODO: atualizar informações de áudio
-    const audioStatus = document.getElementById("audioStatus");
-    const audioLevel = document.getElementById("audioLevel");
+    // CORREÇÃO: Usar jQuery para encontrar elementos
+    const $audioStatus = $("#audioStatus");
+    const $audioLevel = $("#audioLevel");
 
-    if (isError) {
-      audioStatus.textContent = `Erro: ${info}`;
-      audioStatus.style.color = "#f72585";
-    } else {
-      audioStatus.textContent = `Áudio: ${info.status || "Ativo"}`;
-      audioStatus.style.color = "#e6e6e6";
-      audioLevel.textContent = `Nível: ${info.level || 0}%`;
+    if ($audioStatus.length > 0) {
+      if (isError) {
+        $audioStatus
+          .text(`Erro: ${info.status || info}`)
+          .css("color", "#f72585");
+      } else {
+        $audioStatus
+          .text(`Áudio: ${info.status || "Ativo"}`)
+          .css("color", "#e6e6e6");
+      }
+    }
+
+    if ($audioLevel.length > 0) {
+      $audioLevel.text(`Nível: ${info.level || 0}%`);
     }
   }
 
   setButtonStates(playing) {
     // TODO: atualizar estados dos botões
-    const startMicBtn = document.getElementById("startMic");
-    const stopAudioBtn = document.getElementById("stopAudio");
+    // CORREÇÃO: Usar jQuery
+    const $startMicBtn = $("#startMic");
+    const $stopAudioBtn = $("#stopAudio");
 
-    startMicBtn.disabled = playing;
-    stopAudioBtn.disabled = !playing;
+    if ($startMicBtn.length > 0) {
+      $startMicBtn.prop("disabled", playing);
+    }
+    if ($stopAudioBtn.length > 0) {
+      $stopAudioBtn.prop("disabled", !playing);
+    }
   }
 
   showError(message) {
     // TODO: mostrar mensagem de erro
-    const errorModal = document.getElementById("errorModal");
-    const errorMessage = document.getElementById("errorMessage");
+    console.error("ERRO UI:", message);
+    // CORREÇÃO: Usar jQuery
+    const $errorModal = $("#errorModal");
+    const $errorMessage = $("#errorMessage");
 
-    errorMessage.textContent = message;
-    errorModal.classList.remove("hidden");
-
-    // Fechar modal ao clicar no X
-    document.querySelector(".close").onclick = () => {
-      errorModal.classList.add("hidden");
-    };
-
-    // Fechar modal ao clicar fora
-    window.onclick = (event) => {
-      if (event.target === errorModal) {
-        errorModal.classList.add("hidden");
-      }
-    };
+    if ($errorModal.length > 0 && $errorMessage.length > 0) {
+      $errorMessage.text(message);
+      $errorModal.removeClass("hidden");
+    }
   }
 
   setupEventListeners() {
     // TODO: configurar event listeners
-    document.getElementById("startMic").addEventListener("click", () => {
+    console.log("🟢 Configurando event listeners com jQuery...");
+
+    // CORREÇÃO: Verificar se elementos existem com jQuery
+    console.log("🔍 startMic encontrado:", $("#startMic").length > 0);
+    console.log("🔍 stopAudio encontrado:", $("#stopAudio").length > 0);
+    console.log("🔍 audioFile encontrado:", $("#audioFile").length > 0);
+    console.log(
+      "🔍 visualizationType encontrado:",
+      $("#visualizationType").length > 0
+    );
+
+    // 1. Controles de Áudio - CORREÇÃO: Usar jQuery corretamente
+
+    // Iniciar Microfone
+    $("#startMic").on("click", () => {
+      console.log("🎤 Botão Iniciar Microfone CLICADO (jQuery)");
       this.app.startMicrophone();
     });
 
-    document.getElementById("stopAudio").addEventListener("click", () => {
+    // Parar Áudio
+    $("#stopAudio").on("click", () => {
+      console.log("⏹️ Botão Parar Áudio CLICADO");
       this.app.stopAudio();
     });
 
-    document.getElementById("audioFile").addEventListener("change", (e) => {
+    // Carregar Ficheiro de Áudio
+    $("#audioFile").on("change", (e) => {
+      console.log("📁 Ficheiro selecionado");
       if (e.target.files.length > 0) {
         this.app.loadAudioFile(e.target.files[0]);
       }
     });
 
-    document
-      .getElementById("visualizationType")
-      .addEventListener("change", (e) => {
-        this.app.setVisualization(e.target.value);
-      });
-
-    document.getElementById("exportPNG").addEventListener("click", () => {
-      this.app.exportManager.exportAsPNG();
+    // 2. Controles de Visualização
+    $("#visualizationType").on("change", (e) => {
+      console.log("🎨 Visualização alterada:", e.target.value);
+      this.app.setVisualization(e.target.value);
     });
 
-    document.getElementById("exportJPEG").addEventListener("click", () => {
-      this.app.exportManager.exportAsJPEG(0.9);
+    // 3. Controles de Exportação
+    $("#exportPNG").on("click", () => {
+      console.log("📸 Exportar PNG");
+      this.app.exportFrame("png");
     });
+
+    $("#exportJPEG").on("click", () => {
+      console.log("📸 Exportar JPEG");
+      this.app.exportFrame("jpeg");
+    });
+
+    console.log("🟢 Event listeners jQuery configurados");
   }
 
   setupAudioLevels() {
