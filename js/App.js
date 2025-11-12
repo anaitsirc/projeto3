@@ -16,6 +16,7 @@ class App {
     this.init();
 
     window.addEventListener("resize", () => {
+      //para o resize/ redimensionar as visualizações quando a janela ou o layout muda
       const canvas = document.getElementById("audioCanvas");
       const container = canvas.parentElement;
       this.visualizationEngine.resize(container.clientWidth - 40, 400);
