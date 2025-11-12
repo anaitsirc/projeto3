@@ -1,3 +1,4 @@
+import { AudioVisualization } from "./AudioVisualization.js";
 class ParticleVisualization extends AudioVisualization {
   constructor(canvas, audioProcessor) {
     super(canvas, audioProcessor);
