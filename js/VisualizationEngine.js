@@ -11,41 +11,82 @@ class VisualizationEngine {
     this.currentVisualization = null;
     this.animationId = null;
     this.isRunning = false;
+    this.audioProcessor = null; // Inicializar como null
 
-    // Inicializar visualizações
+    // CORREÇÃO: Não inicializar visualizações aqui - vamos fazer depois
+    // this.initVisualizations();
+    // this.setVisualization("spectrum");
+  }
+
+  setAudioProcessor(audioProcessor) {
+    this.audioProcessor = audioProcessor;
+    console.log("🟢 AudioProcessor definido no VisualizationEngine");
+    
+    // CORREÇÃO: Só agora inicializar as visualizações
     this.initVisualizations();
+    this.setVisualization("spectrum");
   }
 
   initVisualizations() {
-    // TODO: inicializar tipos de visualização
+    // CORREÇÃO: Agora o audioProcessor não é null
+    console.log("🟢 Inicializando visualizações com audioProcessor:", !!this.audioProcessor);
+    
     this.visualizations.set(
       "spectrum",
-      new SpectrumVisualization(this.canvas, null)
+      new SpectrumVisualization(this.canvas, this.audioProcessor)
     );
     this.visualizations.set(
-      "waveform",
-      new WaveformVisualization(this.canvas, null)
+      "waveform", 
+      new WaveformVisualization(this.canvas, this.audioProcessor)
     );
     this.visualizations.set(
       "particles",
-      new ParticleVisualization(this.canvas, null)
+      new ParticleVisualization(this.canvas, this.audioProcessor)
     );
   }
 
-  setVisualization(type) {
-    // TODO: definir visualização atual
-    console.log(`Definindo visualização: ${type}`);
-    return false; // Devolver boolean indicando sucesso
+
+
+ setVisualization(type) {
+    if (this.visualizations.has(type)) {
+      this.currentVisualization = this.visualizations.get(type);
+      console.log(`🟢 Visualização alterada para: ${type}`);
+      return true;
+    }
+    console.error(`❌ Tipo de visualização não encontrado: ${type}`);
+    return false;
   }
+
+  draw(freqData, waveData) {
+    if (this.currentVisualization) {
+      this.currentVisualization.update();
+      this.currentVisualization.draw();
+    }
+  }
+
+  clearCanvas() {
+    this.ctx.fillStyle = "#121226";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
 
   start() {
     // TODO: iniciar animação
-    console.log("Iniciando motor de visualização...");
+    if (!this.isRunning) {
+      this.isRunning = true;
+      console.log("Motor de visualização iniciado");
+    }
   }
 
   stop() {
     // TODO: parar animação
-    console.log("Parando motor de visualização...");
+    if (this.isRunning) {
+      this.isRunning = false;
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
+      }
+      console.log("Motor de visualização parado");
+    }
   }
 
   resize() {
@@ -54,12 +95,17 @@ class VisualizationEngine {
 
   getVisualizationProperties() {
     // TODO: obter propriedades da visualização atual
-    return {};
+    return this.currentVisualization
+      ? this.currentVisualization.getProperties()
+      : {};
   }
 
   updateVisualizationProperty(property, value) {
     // TODO: atualizar propriedade da visualização
-    console.log(`Atualizando propriedade: ${property} = ${value}`);
+    if (this.currentVisualization) {
+      return this.currentVisualization.updateProperty(property, value);
+    }
+    return false;
   }
 }
 
