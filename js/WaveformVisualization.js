@@ -1,3 +1,4 @@
+import { AudioVisualization } from "./AudioVisualization.js";
 class WaveformVisualization extends AudioVisualization {
   constructor(canvas, audioProcessor) {
     super(canvas, audioProcessor);
