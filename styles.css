@@ -31,8 +31,8 @@ h1 {
 
 main {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-columns: 220px 1fr 1fr 1fr;
+  grid-template-rows: auto auto auto;
   gap: 20px;
 }
 
@@ -93,13 +93,17 @@ main {
   cursor: not-allowed;
 }
 
+button {
+  width: 100%;
+}
+
 input[type="file"] {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-style: italic;
   width: 100%;
   padding: 8px;
-  background-color: #080506;
-  border: 1px solid #000000;
+  background-color: #121226;
+  border: 1px solid #121226;
   border-radius: 4px;
   color: #e6e6e6;
 }
@@ -109,15 +113,15 @@ select {
   font-style: italic;
   width: 100%;
   padding: 8px;
-  background-color: #000000;
-  border: 1px solid #000000;
+  background-color: #121226;
+  border: 1px solid #121226;
   border-radius: 4px;
   color: #e6e6e6;
 }
 
 #visualization-area {
-  grid-column: 2;
-  grid-row: 1;
+  grid-column: 2 / span 3; /* Começa na coluna 2 e abrange 2 colunas */
+  grid-row: 1 / span;
   background-color: #bb6a9e;
   padding: 20px;
   border-radius: 8px;
@@ -129,7 +133,7 @@ select {
 #audioCanvas {
   width: 100%;
   height: 300px;
-  background-color: #548d7b;
+  background-color: #121226;
   border-radius: 4px;
 }
 
@@ -151,21 +155,21 @@ select {
 }
 
 .property-control {
-  margin-bottom: 15px;
+  margin: 15px 0;
 }
 
 .property-control label {
   display: block;
+  color: rgb(101, 9, 80);
   margin-bottom: 5px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
 }
 
 .property-control input {
   width: 100%;
   padding: 5px;
-  background-color: #638cbe;
-  border: 1px solid #2e87a2;
   border-radius: 4px;
-  color: #e6e6e6;
 }
 
 .modal {
@@ -202,7 +206,7 @@ select {
   display: none;
 }
 
-/*--------------ADUI INFO---------------------------*/
+/*--------------AUDIO INFO---------------------------*/
 #audioInfo {
   margin-top: 15px;
   width: 100%;
@@ -214,16 +218,30 @@ select {
   min-height: 60px; /* Altura mínima fixa */
   flex-shrink: 0; /* Não encolher */
 }
+.level-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 10px; /* Espaço entre o label e a barra */
+  margin-top: 5px;
+}
+#audioLevel {
+  margin: 0;
+  white-space: nowrap; /* Impede quebra de linha */
+  color: #e6e6e6;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  min-width: 60px; /* Largura fixa para alinhamento */
+}
 
 /*--------------------LEVEL-------------------------*/
 
 .level-meter {
-  width: 100%;
+  flex: 1;
   height: 20px;
   background-color: #5d3052;
   border-radius: 10px;
   overflow: hidden;
-  margin: 10px 0;
   position: relative;
 
   /* ESTRATÉGIA ANTI-REFLOW */
@@ -260,23 +278,7 @@ select {
   contain: content; /* Isolar conteúdo */
 }
 
-.property-control {
-  margin: 10px 0;
-}
-
-.property-control label {
-  display: block;
-  color: rgb(101, 9, 80);
-  margin-bottom: 5px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  font-style: italic;
-}
-
-.property-control input {
-  width: 100%;
-}
-
-/*----------- Espamento aos novos icones do Bootstrap-------------*/
+/*----------------------------- iIONES Bootstrap------------------------*/
 /* Ajuste para ícones Font Awesome ou Bootstrap Icons */
 .icon-btn i {
   margin-right: 8px; /* Espaço entre o ícone e o texto */
@@ -289,7 +291,7 @@ select {
   font-size: 1.1em;
 }
 
-/*---------botao reproduzir microfone-----------*/
+/*---------BOTOES-----------*/
 #startMic {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-style: italic;
@@ -297,18 +299,17 @@ select {
   color: white;
   border-color: #471f4d;
 }
+
 #playAudio {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-style: italic;
   background-color: #9c1e69;
   border-color: #9c1e69;
   color: white;
-  /* Adiciona 15 pixels de margem na parte superior */
   margin-top: 10px;
-  /* Garante que o botão Reproduzir/Parar fique em sua própria linha se o container for flex/grid */
-  /* Caso contrário, a propriedade 'margin-bottom' dos outros botões pode ser suficiente. */
   display: block;
 }
+
 #stopAudio {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-style: italic;
@@ -331,17 +332,101 @@ select {
   color: white;
   border-color: #77198f;
 }
-h3{
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  font-style: italic;
-  
-}
-#errorModal{
+
+#errorModal {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-style: italic;
   color: white;
 }
-.modal-content{
-  background-color: rgb(140, 73, 102);
 
+.modal-content {
+  background-color: rgb(140, 73, 102);
+}
+
+/* AUDIO PANEL */
+#audio-panel {
+  grid-column: 3;
+  grid-row: 2;
+  background-color: #bb6a9e;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.sesitivity-control {
+  margin: 15px 0;
+}
+
+.sensitivity-control label {
+  display: block;
+  color: rgb(101, 9, 80);
+  margin-bottom: 5px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+}
+
+.sensitivity-control input {
+  width: 100%;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+#sensitivityValue {
+  color: rgb(101, 9, 80);
+}
+
+#audio-panel h3 {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+}
+
+#properties-panel h3 {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+}
+
+/*----------------CORES----------------*/
+
+#colors-panel {
+  grid-column: 4;
+  grid-row: 2;
+  background-color: #bb6a9e;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+#colors-panel h3 {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+}
+
+.color-control {
+  margin: 15px 0;
+}
+
+.color-control label {
+  display: block;
+  color: rgb(101, 9, 80);
+  margin-bottom: 5px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+}
+
+.color-control input[type="color"] {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #400057;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.color-control input[type="checkbox"] {
+  border: 1px solid #400057;
+  cursor: pointer;
+  display: inline;
 }
