@@ -15,7 +15,7 @@ class App {
     // Inicialização da aplicação
     this.init();
 
-    // MUDANÇA: USAR JQUERY PARA ENCONTRAR O CANVAS e seu pai (container)
+    // USAR JQUERY PARA ENCONTRAR O CANVAS e seu pai (container)
     window.addEventListener("resize", () => {
       const $canvas = $("#audioCanvas");
       // Usamos jQuery .get(0) para obter o elemento nativo, se necessário, mas aqui usamos .parent() e .width()
