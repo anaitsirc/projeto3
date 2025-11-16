@@ -13,8 +13,16 @@ class AudioVisualization {
     this.name = "Visualização";
     this.properties = {
       //porpriedades comuns a todo o tipo de visualizacçoes
+      audioSensitivity: { value: 1.0, min: 0.1, max: 2.0, step: 0.1 },
     };
-    this.testData = new Uint8Array(256);
+    this.colors = {
+      primary: "#4cc9f0",
+      secondary: "#f72585",
+      background: "#121226",
+      useGradient: false,
+      colorByLevel: false,
+    };
+
     this.frameCount = 0;
 
     //DEFAULT/TEST dados de teste para quando não há áudio ativo
@@ -37,7 +45,8 @@ class AudioVisualization {
   }
 
   update() {
-    // TODO: atualizar estado da visualização
+    //  atualizar estado da visualização
+    this.frameCount++;
     //obtem os os metodos mais recentes do AudioProcessor em cada frame
     if (this.audioProcessor && this.audioProcessor.isPlaying) {
       this.frequencyState = this.audioProcessor.getFrequencyData(); //DADOS ORIGINAIS (0-255)
@@ -56,12 +65,12 @@ class AudioVisualization {
   }
 
   getProperties() {
-    // TODO: obter propriedades da visualização
+    //  obter propriedades da visualização
     return JSON.parse(JSON.stringify(this.properties));
   }
 
   updateProperty(property, value) {
-    // TODO: atualizar propriedade
+    //  atualizar propriedade
     if (this.properties.hasOwnProperty(property)) {
       this.properties[property].value = parseFloat(value); // isto atualiza apenas o valor
       return true; //ocorreu a atualização
@@ -70,13 +79,14 @@ class AudioVisualization {
   }
 
   clearCanvas() {
-    // TODO: limpar canvas
-    this.ctx.fillStyle = "#121226";
+    //  limpar canvas
+    //this.ctx.fillStyle = "#121226";
+    this.ctx.fillStyle = this.colors.background;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   drawGrid() {
-    // TODO: desenhar grelha de fundo
+    //  desenhar grelha de fundo
     this.ctx.strokeStyle = "rgba(255, 255, 255, 0.1)"; // DEFINE A COR DO traço com cor branca com uma opacidade de 0.1 para ter efeito de grelha de fundo
     this.ctx.lineWidth = 1; // expessura da linha em pixel
     const width = this.canvas.width; //variavcel com a largura atual do canvas
@@ -101,30 +111,29 @@ class AudioVisualization {
   }
 
   createGradient(colors) {
-    // TODO: criar gradiente de cores
-    //se colors é nulo/indefinido ou se o array tem menos de duas cores para fazer um gradiente para haver transição de cores
-    if (!colors || colors.length < 2) {
-      // define-se um array de cores padrão como segurança para sempre haver um gradiente de cores
-      colors = ["#FFFFFF", "#000000"];
+    //  criar gradiente de cores
+    if (this.colors.useGradient) {
+      const gradiente = this.ctx.createLinearGradient(
+        0,
+        0,
+        this.canvas.width,
+        this.canvas.height
+      );
+      //array de cores que da acesso a cor atual do indice fornecida
+      //adiciona uma cor ao objeto gradiente e a sua posição de transição
+      //index / (colors.length - 1: garante que a 1º cor fique 0.0(inicio)e a ultima cor fique em 1.0 (fim) com as cores intermédia isto é normaliza a posição da cor
+      //color : cor que de ser colocada na posição calculada
+      colors.forEach((color, index) => {
+        gradiente.addColorStop(index / (colors.length - 1), color);
+      });
+      return gradiente;
+    } else {
+      return colors[0]; //Retornar a primeira cor do array 'colors' (a cor primária dinâmica/manual)
     }
-    const gradiente = this.ctx.createLinearGradient(
-      0,
-      0,
-      this.canvas.width,
-      this.canvas.height
-    );
-    //array de cores que da acesso a cor atual do indice fornecida
-    //adiciona uma cor ao objeto gradiente e a sua posição de transição
-    //index / (colors.length - 1: garante que a 1º cor fique 0.0(inicio)e a ultima cor fique em 1.0 (fim) com as cores intermédia isto é normaliza a posição da cor
-    //color : cor que de ser colocada na posição calculada
-    colors.forEach((color, index) => {
-      gradiente.addColorStop(index / (colors.length - 1), color);
-    });
-    return gradiente;
   }
 
   normalizeData(dadosOriginais) {
-    // TODO: normalizar dados de áudio
+    //  normalizar dados de áudio
     if (!dadosOriginais || dadosOriginais.length === 0) return [];
     const normalized = new Array(dadosOriginais.length); // cria um array com o mesmo tamanho dos dados originais (dataArray) para guardar os dados normalizados
     for (let i = 0; i < dadosOriginais.length; i++) {
@@ -133,6 +142,85 @@ class AudioVisualization {
     }
     return normalized; //retorna o array com todos os valores normalizados
   }
+
+  getSensitiveData(data) {
+    const normalized = this.normalizeData(data);
+    const sensitivity = this.properties.audioSensitivity.value;
+
+    // Aplicar sensibilidade a todos os valores
+    for (let i = 0; i < normalized.length; i++) {
+      normalized[i] = Math.min(1.0, normalized[i] * sensitivity); //aqui ja normalizado
+    }
+
+    return normalized;
+  }
+
+  getDynamicColor(audioLevel) {
+    if (!this.colors.colorByLevel) {
+      return {
+        primary: this.colors.primary,
+        secondary: this.colors.secondary,
+      };
+    }
+    const level = audioLevel / 100;
+
+    // um intervalo de HUE, por exemplo
+    const HUE_START = 100;
+    const HUE_END = 90;
+
+    // Interpolação Linear do Matiz (Hue)
+    // hue = START + (END - START) * level
+    const hue = HUE_START + (HUE_END - HUE_START) * level;
+    const saturation = 90;
+    const lightness = 60;
+
+    // cor HSL interpolada
+    const primaryColor = this.hslToCssString(hue, saturation, lightness);
+
+    return {
+      primary: primaryColor,
+      secondary: this.colors.secondary,
+    };
+  }
+
+  hslToCssString(h, s, l) {
+    // Garantir que h está no intervalo [0, 360), s e l em [0, 100]
+    return `hsl(${h % 360}, ${s}%, ${l}%)`;
+  }
+
+  /*getDynamicColor(audioLevel) {
+    // VERIFICAR SE colorByLevel ESTÁ ATIVO
+    if (!this.colors.colorByLevel) {
+      // Se não estiver ativo, retorna as cores manuais
+      return {
+        primary: this.colors.primary,
+        secondary: this.colors.secondary,
+      };
+    }
+
+    // Array de cores que varia com o nível de áudio (de baixo para alto)
+    const colorSpectrum = [
+      "#ff00bfff",
+      "#b700ffff",
+      "#00c3ffff",
+      "#00ff77ff",
+      "#ffbb00ff",
+    ];
+
+    const index = Math.min(
+      Math.floor((audioLevel / 100) * colorSpectrum.length),
+      colorSpectrum.length - 1
+    );
+
+    const primaryColor = colorSpectrum[index];
+    const secondaryColor =
+      colorSpectrum[Math.min(index + 1, colorSpectrum.length - 1)];
+
+    return {
+      primary: primaryColor,
+      secondary: secondaryColor,
+    };
+  }*/
 }
 
 export { AudioVisualization };
