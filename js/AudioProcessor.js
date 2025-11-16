@@ -23,7 +23,7 @@ class AudioProcessor {
 
   //Captura de áudio via microfone com tratamento de permissões
   async startMicrophone() {
-    // TODO: iniciar captura do microfone (ou fonte de som MediaStreamSource)
+    //iniciar captura do microfone (ou fonte de som MediaStreamSource)
 
     //verifica se o áudio está suspenso e acorda-o
     if (this.audioContext.state !== "running") {
@@ -35,13 +35,13 @@ class AudioProcessor {
     });
     this.source = this.audioContext.createMediaStreamSource(this.mediaStream); // cria fonte (MediaStream) referente ao micro - "prompts the user for permission to use a media input which produces a MediaStream"
     this.source.connect(this.analyser); // ligar fonte com o analisador
-    this.analyser.connect(this.audioContext.destination); // Ligado à saída de som (colunas)
+    //this.analyser.connect(this.audioContext.destination); // Ligado à saída de som (colunas) CAUSA FEEDBACK
 
     this.isPlaying = true; //atualizar estado
 
     console.log("Iniciando captura do microfone...");
     // Devolver Promise - "representa a conclusão eventual:descreve o fato de que a operação assíncrona terminou (seja audio ou um falha) de uma operação assíncrona e seu valor resultante."
-  } 
+  }
 
   //Carregamento e análise de ficheiros de áudio (WAV/MP3)
   async loadAudioFile(file) {
@@ -87,7 +87,7 @@ class AudioProcessor {
   }
 
   stop() {
-    // TODO: parar processamento de áudio
+    //parar processamento de áudio
 
     if (this.mediaStream) {
       // pra som de micro - mediaStream contém uma ou mais tracks
@@ -125,7 +125,7 @@ class AudioProcessor {
   } //Processamento de dados de frequência e waveform em tempo real
 
   update() {
-    // TODO: atualizar dados de áudio
+    //  atualizar dados de áudio
     if (!this.analyser || !this.isPlaying) return;
 
     this.analyser.getByteFrequencyData(this.frequencyData); //atualiza freqs
@@ -133,17 +133,17 @@ class AudioProcessor {
   }
 
   getFrequencyData() {
-    // TODO: obter dados de frequência
+    //  obter dados de frequência
     return this.frequencyData;
   }
 
   getWaveformData() {
-    // TODO: obter dados de forma de onda
+    // obter dados de forma de onda
     return this.waveformData;
   }
 
   calculateAudioLevel() {
-    // TODO: calcular nível de áudio
+    // calcular nível de áudio
 
     // Soma todas as intensidades
     let result = 0;

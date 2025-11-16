@@ -16,32 +16,38 @@ class SpectrumVisualization extends AudioVisualization {
       ? this.audioProcessor.getFrequencyData()
       : this.testData;
 
-    const normalizedData = this.normalizeData(data);
+    //const normalizedData = this.normalizeData(data);
+    const sensitiveData = this.getSensitiveData(data); //dados normalizados e com sensibilidade aplicada
     const barWidth =
       (this.canvas.width / data.length) * this.properties.barSpacing.value; //largura de cada barra com PROPRIEDADE aplicada
 
+    // CORES DINÂMICAS
+    const audioLevel = this.audioProcessor
+      ? this.audioProcessor.calculateAudioLevel() * 100
+      : 0;
+    const dynamicColors = this.getDynamicColor(audioLevel);
     // gradiente
-    const gradient = this.createGradient([
-      "#ff00bfff",
-      "#b700ffff",
-      "#00c3ffff",
-      "#00ff77ff",
-      "#ffbb00ff",
+    const visualizationStyle = this.createGradient([
+      dynamicColors.primary,
+      dynamicColors.secondary,
     ]);
 
-    for (let i = 0; i < data.length; i++) {
-      const barHeight = normalizedData[i] * this.canvas.height; //altura normalizada e uso da PROPRIEDADE do brilho
+    for (let i = 0; i < sensitiveData.length; i++) {
+      //const barHeight = normalizedData[i] * this.canvas.height;
+      const barHeight = sensitiveData[i] * this.canvas.height;
       const x = i * barWidth;
       const y = this.canvas.height - barHeight; //posição y (base na parte inferior)
 
-      this.ctx.fillStyle = gradient;
+      this.ctx.fillStyle = visualizationStyle;
       this.ctx.fillRect(x, y, barWidth - 1, barHeight);
     }
   }
 
   getProperties() {
-    // TODO: obter propriedades específicas
-    return super.getProperties();
+    //  obter propriedades específicas
+    const allProperties = super.getProperties();
+    delete allProperties.audioSensitivity;
+    return allProperties;
   }
 }
 

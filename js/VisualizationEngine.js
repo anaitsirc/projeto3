@@ -56,7 +56,7 @@ class VisualizationEngine {
     return false;
   }
 
-  draw(freqData, waveData) {
+  draw() {
     // Método principal de renderização - chamado a cada frame
 
     if (this.currentVisualization) {
@@ -71,7 +71,7 @@ class VisualizationEngine {
   }
 
   start() {
-    // TODO: iniciar animação
+    //  iniciar animação
     if (!this.isRunning) {
       this.isRunning = true;
       console.log("Motor de visualização iniciado");
@@ -79,7 +79,7 @@ class VisualizationEngine {
   }
 
   stop() {
-    // TODO: parar animação
+    //  parar animação
     if (this.isRunning) {
       this.isRunning = false;
       if (this.animationId) {
@@ -96,14 +96,14 @@ class VisualizationEngine {
   }
 
   getVisualizationProperties() {
-    // TODO: obter propriedades da visualização atual
+    //  obter propriedades da visualização atual
     return this.currentVisualization
       ? this.currentVisualization.getProperties()
       : {};
   }
 
   updateVisualizationProperty(property, value) {
-    // TODO: atualizar propriedade da visualização
+    //  atualizar propriedade da visualização
     if (this.currentVisualization) {
       return this.currentVisualization.updateProperty(property, value);
     }

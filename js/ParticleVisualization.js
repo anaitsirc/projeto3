@@ -15,7 +15,7 @@ class ParticleVisualization extends AudioVisualization {
       max: 200, // valor maximo do range
       step: 10, //passo
     };
-    this.properties.particleSize = { value: 2, min: 1, max: 3, step: 0.5 }; //tamanho base da particula
+    this.properties.particleSize = { value: 1, min: 0.2, max: 2, step: 0.1 }; //tamanho base da particula
     this.properties.particleSpeed = { value: 0.5, min: 0.5, max: 1, step: 0.1 }; //velocidade da aprticula
     this.properties.particleBrightness = {
       value: 1,
@@ -42,7 +42,7 @@ class ParticleVisualization extends AudioVisualization {
   }
 
   getProperties() {
-    // TODO: obter propriedades específicas
+    //  obter propriedades específicas
     return super.getProperties();
   }
 
@@ -68,7 +68,8 @@ class ParticleVisualization extends AudioVisualization {
     const data = this.audioProcessor
       ? this.audioProcessor.getFrequencyData()
       : this.testData;
-    const normalizedData = this.normalizeData(data);
+    //const normalizedData = this.normalizeData(data);
+    const sensitiveData = this.getSensitiveData(data); //dados normalizados e com sensibilidade aplicada
     const audioLevel = this.audioProcessor
       ? this.audioProcessor.calculateAudioLevel()
       : 0.5;
@@ -79,7 +80,9 @@ class ParticleVisualization extends AudioVisualization {
     for (let i = 0; i < this.particles.length; i++) {
       const p = this.particles[i];
 
-      p.radius = size * (1 + audioLevel * 0.1); //aplicar PROPRIEDADE do tamanho base e o nível de áudio para um efeito de pulsação (pulso do bite)
+      //aplicar PROPRIEDADE do tamanho base e o nível de áudio para um efeito de pulsação (pulso do bite)
+      p.radius = size * (1 + audioLevel * 0.1);
+
       // mover partícula consoante velocidade- aplicar PROPRIEDADE speed
       p.x += p.vx * speed;
       p.y += p.vy * speed;
@@ -89,9 +92,9 @@ class ParticleVisualization extends AudioVisualization {
       if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
 
       const freqIndex = Math.floor(
-        (i / this.particles.length) * normalizedData.length
+        (i / this.particles.length) * sensitiveData.length
       );
-      const intensity = normalizedData[freqIndex];
+      const intensity = sensitiveData[freqIndex];
       //influência do áudio - adiciona mov aleatorio consoante a intensidade do audio
       p.vx += (Math.random() - 0.5) * intensity;
       p.vy += (Math.random() - 0.5) * intensity;
@@ -100,12 +103,23 @@ class ParticleVisualization extends AudioVisualization {
 
   drawParticles() {
     // desenhar cada particula como circulos
+    // CORES DINÂMICAS
+    const audioLevel = this.audioProcessor
+      ? this.audioProcessor.calculateAudioLevel() * 100
+      : 0;
+    const dynamicColors = this.getDynamicColor(audioLevel);
+    // gradiente
+    const visualizationStyle = this.createGradient([
+      dynamicColors.primary,
+      dynamicColors.secondary,
+    ]);
     for (const p of this.particles) {
       const brightness = this.properties.particleBrightness.value; // PROPRIEDADE
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); //arco completo = circulo
       //this.ctx.fillStyle = p.color;
-      this.ctx.fillStyle = `rgba(255, 0, 127, ${brightness * 0.5})`;
+      //this.ctx.fillStyle = `rgba(255, 0, 127, ${brightness * 0.5})`;
+      this.ctx.fillStyle = visualizationStyle;
       this.ctx.fill();
     }
   }
@@ -128,19 +142,33 @@ class ParticleVisualization extends AudioVisualization {
           this.ctx.beginPath();
           this.ctx.moveTo(p1.x, p1.y);
           this.ctx.lineTo(p2.x, p2.y);
-          this.ctx.strokeStyle = `rgba(76, 201, 240, ${opacity * 0.5})`; // azul com opacidade variável
+          //this.ctx.strokeStyle = `rgba(76, 201, 240, ${opacity * 0.5})`;
+          this.ctx.strokeStyle = `${this.colors.secondary}${Math.floor(
+            // azul com opacidade variável
+            opacity * 0.5 * 255
+          )
+            .toString(16)
+            .padStart(2, "0")}`;
           this.ctx.lineWidth = 1;
           this.ctx.stroke();
         }
       }
     }
   }
+
   updateProperty(property, value) {
     const result = super.updateProperty(property, value);
     if (property === "particleCount" && result) {
       this.initParticles(); // Recriar partículas quando o count muda
     }
     return result;
+  }
+
+  getProperties() {
+    //  obter propriedades específicas
+    const allProperties = super.getProperties();
+    delete allProperties.audioSensitivity;
+    return allProperties;
   }
 }
 

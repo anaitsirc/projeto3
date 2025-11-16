@@ -36,7 +36,7 @@ class App {
     try {
       this.stopAudio(); //para qualque audio ativo anter de iniciar
       await this.audioProcessor.startMicrophone(); //
-      this.uiManager.updateAudioInfo({ status: "MIC ON" });
+      this.uiManager.updateAudioInfo({ status: "ON" });
       this.uiManager.setButtonStates(true);
     } catch (error) {
       this.uiManager.showError("Erro: " + error.message);
@@ -45,7 +45,6 @@ class App {
 
   //Carregar e reproduzir ficheiro de áudio
   async loadAudioFile(file) {
-    console.log(`🎵 Tentando carregar: ${file.name}`);
     try {
       this.stopAudio();
       this.uiManager.updateAudioInfo({ status: "LOADING..." });
@@ -72,7 +71,7 @@ class App {
   }
 
   setVisualization(type) {
-    // TODO: definir tipo de visualização
+    // definir tipo de visualização
     if (this.visualizationEngine.setVisualization(type)) {
       // Atualiza painel de propriedades quando muda visualização
       this.uiManager.updatePropertiesPanel();
@@ -81,7 +80,7 @@ class App {
   }
 
   exportFrame(format) {
-    // TODO: exportar frame atual
+    //  exportar frame atual
     console.log(`Exportando frame como ${format.toUpperCase()}...`);
     if (format === "png") {
       this.exportManager.exportAsPNG();
@@ -91,7 +90,7 @@ class App {
   }
 
   destroy() {
-    // TODO: limpar recursos
+    //  limpar recursos
     console.log("Destruindo aplicação...");
   }
 
@@ -101,11 +100,11 @@ class App {
       this.audioProcessor.update(); //atualizar os dados do audio
 
       if (this.audioProcessor.isPlaying) {
-        const freqData = this.audioProcessor.getFrequencyData(); //dados fft (frequencia)
-        const waveData = this.audioProcessor.getWaveformData(); // dados da forma da onda
+        /*const freqData = this.audioProcessor.getFrequencyData(); //dados fft (frequencia) //nao usado
+        const waveData = this.audioProcessor.getWaveformData(); // dados da forma da onda*/
         const level = this.audioProcessor.calculateAudioLevel(); //nivel RMS de volumeS
 
-        this.visualizationEngine.draw(freqData, waveData); //representa visualmente no canvas
+        this.visualizationEngine.draw(); //representa visualmente no canvas
         this.uiManager.updateAudioInfo({ level: level });
       } else {
         // Verifica se o áudio terminou para garantir que o nível é resetado

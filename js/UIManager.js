@@ -5,19 +5,28 @@ class UIManager {
     this.visualizationEngine = app.visualizationEngine;
     this.audioProcessor = app.audioProcessor;
 
+    this.audioSensitivity = 1.0;
+    this.colors = {
+      primary: "#4cc9f0",
+      secondary: "#f72585",
+      background: "#121226",
+      useGradient: false,
+      colorByLevel: false,
+    };
+
     this.setupEventListeners();
     this.setupAudioLevels();
   }
 
   updatePropertiesPanel() {
-    // TODO: atualizar painel de propriedades
+    //  atualizar painel de propriedades
     const $propertiesContainer = $("#properties-container");
     $propertiesContainer.empty();
-    
+
     // Adicionar o nome da visualização atual
-    const currentVizName = this.visualizationEngine.currentVisualization 
-                         ? this.visualizationEngine.currentVisualization.name 
-                         : "N/A";
+    const currentVizName = this.visualizationEngine.currentVisualization
+      ? this.visualizationEngine.currentVisualization.name
+      : "N/A";
 
     $("#properties-panel h3").text(`Propriedades: ${currentVizName}`);
 
@@ -34,7 +43,7 @@ class UIManager {
   }
 
   updateAudioInfo(info, isError = false) {
-    // TODO: atualizar informações de áudio
+    //  atualizar informações de áudio
     const $audioStatus = $("#audioStatus");
     const $audioLevel = $("#audioLevel");
 
@@ -44,41 +53,40 @@ class UIManager {
       $audioStatus
         .text(`Áudio: ${info.status || "ON"}`)
         .css("color", "#e6e6e6");
-      
+
       // Apenas atualiza o nível se for fornecido (para evitar flashes)
       if (info.level !== undefined) {
-        $audioLevel.text(`Nível: ${info.level || 0}%`);
         this.updateLevelMeter(info.level || 0); // atualizar o medidor visual
       }
     }
   }
 
   setButtonStates(playing) {
-    // TODO: atualizar estados dos botões baseado no status de reprodução
+    //  atualizar estados dos botões baseado no status de reprodução
     const $startMicBtn = $("#startMic");
     const $stopAudioBtn = $("#stopAudio");
     const $playAudioBtn = $("#playAudio");
     const $audioFile = $("#audioFile");
-    
+
     // O botão Parar funciona SEMPRE que está a tocar
     $stopAudioBtn.prop("disabled", !playing);
 
     if (playing) {
-        // Se está a tocar (Mic ou File), desativa tudo o que inicia
-        $startMicBtn.prop("disabled", true);
-        $playAudioBtn.prop("disabled", true);
-        $audioFile.prop("disabled", true);
+      // Se está a tocar (Mic ou File), desativa tudo o que inicia
+      $startMicBtn.prop("disabled", true);
+      $playAudioBtn.prop("disabled", true);
+      $audioFile.prop("disabled", true);
     } else {
-        // Se está parado
-        $startMicBtn.prop("disabled", false);
-        $audioFile.prop("disabled", false);
-        // O botão playAudio só ativa se houver um ficheiro selecionado
-        $playAudioBtn.prop("disabled", $audioFile.prop("files").length === 0);
+      // Se está parado
+      $startMicBtn.prop("disabled", false);
+      $audioFile.prop("disabled", false);
+      // O botão playAudio só ativa se houver um ficheiro selecionado
+      $playAudioBtn.prop("disabled", $audioFile.prop("files").length === 0);
     }
   }
 
   showError(message) {
-    // TODO: mostrar mensagem de erro
+    //  mostrar mensagem de erro
     console.error("ERRO UI:", message);
 
     const $errorModal = $("#errorModal");
@@ -89,11 +97,6 @@ class UIManager {
       $errorModal.removeClass("hidden");
     }
 
-    // Fechar modal ao clicar no X
-    document.querySelector(".close").onclick = () => {
-      $errorModal.addClass("hidden");
-    };
-
     // Fechar modal ao clicar fora
     window.onclick = (event) => {
       if (event.target === errorModal) {
@@ -101,6 +104,7 @@ class UIManager {
       }
     };
   }
+
   setupEventListeners() {
     // Tratamento de eventos
 
@@ -118,23 +122,23 @@ class UIManager {
     $("#audioFile").on("change", (e) => {
       const files = $(e.target).prop("files");
       if (files.length > 0) {
-          // Ativa o botão Reproduzir quando um ficheiro é selecionado
-          $("#playAudio").prop("disabled", false);
-          this.updateAudioInfo({ status: `FILE READY: ${files[0].name}` });
+        // Ativa o botão Reproduzir quando um ficheiro é selecionado
+        $("#playAudio").prop("disabled", false);
+        this.updateAudioInfo({ status: `FILE READY: ${files[0].name}` });
       } else {
-          $("#playAudio").prop("disabled", true);
-          this.updateAudioInfo({ status: "OFF" });
+        $("#playAudio").prop("disabled", true);
+        this.updateAudioInfo({ status: "OFF" });
       }
     });
-    
-    // ✅ NOVO BOTÃO: Reproduzir Áudio
+
+    // reproduzir Áudio
     $("#playAudio").on("click", () => {
-        const files = $("#audioFile").prop("files");
-        if (files.length > 0) {
-            this.app.loadAudioFile(files[0]);
-        } else {
-            this.showError("Selecione um ficheiro de áudio primeiro.");
-        }
+      const files = $("#audioFile").prop("files");
+      if (files.length > 0) {
+        this.app.loadAudioFile(files[0]);
+      } else {
+        this.showError("Selecione um ficheiro de áudio primeiro.");
+      }
     });
 
     // Tipo de Visualização
@@ -150,6 +154,44 @@ class UIManager {
     $("#exportJPEG").on("click", () => {
       this.app.exportFrame("jpeg");
     });
+
+    //sesibilidade do audio
+    $("#audioSensitivity").on("input", (e) => {
+      const sensitivity = parseFloat($(e.target).val());
+      this.audioSensitivity = sensitivity;
+      $("#sensitivityValue").text(sensitivity.toFixed(1));
+
+      // Aplicar sensibilidade ao audio processor se existir
+      if (this.audioProcessor) {
+        this.applyAudioSensitivity(sensitivity);
+      }
+    });
+
+    //cores
+    $("#primaryColor").on("input", (e) => {
+      this.colors.primary = e.target.value;
+      this.applyColors();
+    });
+
+    $("#secondaryColor").on("input", (e) => {
+      this.colors.secondary = e.target.value;
+      this.applyColors();
+    });
+
+    $("#backgroundColor").on("input", (e) => {
+      this.colors.background = e.target.value;
+      this.applyColors();
+    });
+
+    $("#useGradient").on("change", (e) => {
+      this.colors.useGradient = e.target.checked;
+      this.applyColors();
+    });
+
+    $("#colorByLevel").on("change", (e) => {
+      this.colors.colorByLevel = e.target.checked;
+      this.applyColors();
+    });
   }
 
   setupAudioLevels() {
@@ -163,12 +205,11 @@ class UIManager {
       // Usar requestAnimationFrame para updates suaves
       requestAnimationFrame(() => {
         this.$levelBar.css("width", level + "%");
-        this.$levelText.text(level + "%");
 
         // Mudar cor baseado no nível
-        if (level > 80) {
+        if (level > 50) {
           this.$levelBar.css("background-color", "#f72585");
-        } else if (level > 50) {
+        } else if (level > 20) {
           this.$levelBar.css("background-color", "#ffaa00");
         } else {
           this.$levelBar.css("background-color", "#4cc9f0");
@@ -178,11 +219,12 @@ class UIManager {
   }
 
   createPropertyControl(property, config) {
-    const $container = $("<div>").addClass("property-control"); 
+    const $container = $("<div>").addClass("property-control");
 
+    const formattedName = this.formatPropertyName(property);
     const $label = $("<label>")
       .attr("for", `prop-${property}`)
-      .text(`${property}: ${config.value.toFixed(1)}`);
+      .text(`${formattedName}: ${config.value.toFixed(1)}`); //toFixed(1) Arredonda o número para um número fixo de casas decimais; Converte o resultado desse arredondamento para uma string
 
     const $input = $("<input>").attr({
       type: "range",
@@ -195,10 +237,10 @@ class UIManager {
 
     // Atualiza propriedade em tempo real durante interação
     $input.on("input", (e) => {
-      const value = parseFloat($(e.target).val()); // USAR JQUERY .val()
+      const value = parseFloat($(e.target).val());
 
       // Atualiza o texto da label
-      $label.text(`${property}: ${value.toFixed(1)}`);
+      $label.text(`${formattedName}: ${value.toFixed(1)}`);
 
       // Atualiza a propriedade na engine
       this.visualizationEngine.updateVisualizationProperty(property, value);
@@ -207,6 +249,42 @@ class UIManager {
     $container.append($label, $input);
 
     return $container;
+  }
+
+  formatPropertyName(propertyName) {
+    const spaced = propertyName.replace(/([A-Z])/g, " $1"); // Ex: 'barSpacing' -> 'bar Spacing'
+    return spaced.charAt(0).toUpperCase() + spaced.slice(1); // Ex: 'bar Spacing' -> 'Bar Spacing'
+  }
+
+  applyAudioSensitivity(sensitivity) {
+    // A sensibilidade agora é uma propriedade geral da AudioVisualization
+    // atualizar a propriedade em todas as visualizações
+    const visualizations = this.visualizationEngine.visualizations;
+
+    visualizations.forEach((visualization) => {
+      if (visualization.properties.audioSensitivity) {
+        visualization.properties.audioSensitivity.value = sensitivity;
+      }
+    });
+  }
+
+  applyColors() {
+    const visualizations = this.visualizationEngine.visualizations;
+
+    visualizations.forEach((visualization) => {
+      // Atualizar cores na visualização
+      visualization.colors.primary = this.colors.primary;
+      visualization.colors.secondary = this.colors.secondary;
+      visualization.colors.background = this.colors.background;
+      visualization.colors.useGradient = this.colors.useGradient;
+      visualization.colors.colorByLevel = this.colors.colorByLevel;
+    });
+
+    // Aplicar cor de fundo ao canvas
+    const $canvas = $("#audioCanvas");
+    const canvas = $canvas[0];
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = this.colors.background;
   }
 }
 
