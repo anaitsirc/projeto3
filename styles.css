@@ -6,7 +6,7 @@
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #1a1a2e;
+  background-color: #683355;
   color: #e6e6e6;
   line-height: 1.6;
 }
@@ -23,7 +23,9 @@ header {
 }
 
 h1 {
-  color: #4cc9f0;
+  color: #e969b4;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-style: italic;
   font-size: 2.5rem;
 }
 
@@ -37,7 +39,7 @@ main {
 #controls {
   grid-column: 1;
   grid-row: 1 / span 2;
-  background-color: #16213e;
+  background-color: #dfa3c9;
   padding: 20px;
   border-radius: 8px;
 }
@@ -47,9 +49,11 @@ main {
 }
 
 .control-group h3 {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
   margin-bottom: 15px;
-  color: #4cc9f0;
-  border-bottom: 1px solid #4cc9f0;
+  color: #2f0a5b;
+  border-bottom: 1px solid #351684;
   padding-bottom: 5px;
 }
 
@@ -66,21 +70,21 @@ main {
 }
 
 .btn-primary {
-  background-color: #4361ee;
+  background-color: #48194e;
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: #3a56d4;
+  background-color: #9e09ae;
 }
 
 .btn-secondary {
-  background-color: #6c757d;
+  background-color: #4a1d86;
   color: white;
 }
 
 .btn-secondary:hover {
-  background-color: #5a6268;
+  background-color: #c466a6;
 }
 
 .btn-primary:disabled,
@@ -90,19 +94,23 @@ main {
 }
 
 input[type="file"] {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
   width: 100%;
   padding: 8px;
-  background-color: #0f3460;
-  border: 1px solid #4cc9f0;
+  background-color: #080506;
+  border: 1px solid #000000;
   border-radius: 4px;
   color: #e6e6e6;
 }
 
 select {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
   width: 100%;
   padding: 8px;
-  background-color: #0f3460;
-  border: 1px solid #4cc9f0;
+  background-color: #000000;
+  border: 1px solid #000000;
   border-radius: 4px;
   color: #e6e6e6;
 }
@@ -110,7 +118,7 @@ select {
 #visualization-area {
   grid-column: 2;
   grid-row: 1;
-  background-color: #16213e;
+  background-color: #bb6a9e;
   padding: 20px;
   border-radius: 8px;
   display: flex;
@@ -121,7 +129,7 @@ select {
 #audioCanvas {
   width: 100%;
   height: 300px;
-  background-color: #0f3460;
+  background-color: #548d7b;
   border-radius: 4px;
 }
 
@@ -130,12 +138,14 @@ select {
   width: 100%;
   display: flex;
   justify-content: space-between;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
 }
 
 #properties-panel {
   grid-column: 2;
   grid-row: 2;
-  background-color: #16213e;
+  background-color: #bb6a9e;
   padding: 20px;
   border-radius: 8px;
 }
@@ -152,8 +162,8 @@ select {
 .property-control input {
   width: 100%;
   padding: 5px;
-  background-color: #0f3460;
-  border: 1px solid #4cc9f0;
+  background-color: #638cbe;
+  border: 1px solid #2e87a2;
   border-radius: 4px;
   color: #e6e6e6;
 }
@@ -172,7 +182,7 @@ select {
 }
 
 .modal-content {
-  background-color: #16213e;
+  background-color: #b37e2a;
   padding: 20px;
   border-radius: 8px;
   width: 400px;
@@ -210,7 +220,7 @@ select {
 .level-meter {
   width: 100%;
   height: 20px;
-  background-color: #333;
+  background-color: #5d3052;
   border-radius: 10px;
   overflow: hidden;
   margin: 10px 0;
@@ -225,7 +235,7 @@ select {
 .level-bar {
   height: 100%;
   width: 0%;
-  background-color: #4cc9f0;
+  background-color: #ee5ddb;
   border-radius: 10px;
 
   /* ESTRATÉGIA ANTI-REFLOW */
@@ -240,7 +250,7 @@ select {
   position: absolute;
   right: 10px;
   top: 0;
-  color: white;
+  color: rgb(255, 255, 255);
   font-size: 12px;
   line-height: 20px;
 
@@ -256,10 +266,82 @@ select {
 
 .property-control label {
   display: block;
-  color: white;
+  color: rgb(101, 9, 80);
   margin-bottom: 5px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
 }
 
 .property-control input {
   width: 100%;
+}
+
+/*----------- Espamento aos novos icones do Bootstrap-------------*/
+/* Ajuste para ícones Font Awesome ou Bootstrap Icons */
+.icon-btn i {
+  margin-right: 8px; /* Espaço entre o ícone e o texto */
+  font-size: 1.1em;
+}
+
+/* Se quiser ser mais específico para o Bootstrap Icons */
+.icon-btn .bi {
+  margin-right: 8px;
+  font-size: 1.1em;
+}
+
+/*---------botao reproduzir microfone-----------*/
+#startMic {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  background-color: #471f4d;
+  color: white;
+  border-color: #471f4d;
+}
+#playAudio {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  background-color: #9c1e69;
+  border-color: #9c1e69;
+  color: white;
+  /* Adiciona 15 pixels de margem na parte superior */
+  margin-top: 10px;
+  /* Garante que o botão Reproduzir/Parar fique em sua própria linha se o container for flex/grid */
+  /* Caso contrário, a propriedade 'margin-bottom' dos outros botões pode ser suficiente. */
+  display: block;
+}
+#stopAudio {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  color: white;
+  border-color: #372352;
+}
+
+#exportPNG {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  background-color: #430927;
+  color: white;
+  border-color: #430927;
+}
+
+#exportJPEG {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  background-color: #77198f;
+  color: white;
+  border-color: #77198f;
+}
+h3{
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  
+}
+#errorModal{
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: italic;
+  color: white;
+}
+.modal-content{
+  background-color: rgb(140, 73, 102);
+
 }
