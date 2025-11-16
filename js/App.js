@@ -15,11 +15,12 @@ class App {
     // Inicialização da aplicação
     this.init();
 
+    // MUDANÇA: USAR JQUERY PARA ENCONTRAR O CANVAS e seu pai (container)
     window.addEventListener("resize", () => {
-      //para o resize/ redimensionar as visualizações quando a janela ou o layout muda
-      const canvas = document.getElementById("audioCanvas");
-      const container = canvas.parentElement;
-      this.visualizationEngine.resize(container.clientWidth - 40, 400);
+      const $canvas = $("#audioCanvas");
+      // Usamos jQuery .get(0) para obter o elemento nativo, se necessário, mas aqui usamos .parent() e .width()
+      const $container = $canvas.parent();
+      this.visualizationEngine.resize($container.width() - 40, 400);
     });
   }
 
@@ -42,9 +43,24 @@ class App {
     }
   }
 
+  //Carregar e reproduzir ficheiro de áudio
   async loadAudioFile(file) {
-    // TODO: carregar ficheiro de áudio
-    console.log("Carregando ficheiro de áudio...");
+    console.log(`🎵 Tentando carregar: ${file.name}`);
+    try {
+      this.stopAudio();
+      this.uiManager.updateAudioInfo({ status: "LOADING..." });
+
+      // Chama o método atualizado no AudioProcessor que lida com MP3/WAV e reprodução.
+      await this.audioProcessor.loadAudioFile(file);
+
+      this.uiManager.updateAudioInfo({ status: `PLAYING: ${file.name}` });
+      this.uiManager.setButtonStates(true);
+    } catch (error) {
+      // Captura o erro (incluindo o erro de formato MP3/WAV)
+      this.uiManager.showError(error.message);
+      this.uiManager.updateAudioInfo({ status: "OFF", level: 0 });
+      this.uiManager.setButtonStates(false);
+    }
   }
 
   stopAudio() {
@@ -92,6 +108,16 @@ class App {
         this.visualizationEngine.draw(freqData, waveData); //representa visualmente no canvas
         this.uiManager.updateAudioInfo({ level: level });
       } else {
+        // Verifica se o áudio terminou para garantir que o nível é resetado
+        if (
+          this.audioProcessor.source &&
+          this.audioProcessor.source.buffer &&
+          this.audioProcessor.source.buffer.duration > 0
+        ) {
+          // Se o áudio do ficheiro terminou, garante que o stop é completo.
+          // A verificação é mais robusta no AudioProcessor, mas aqui limpamos o UI.
+          this.uiManager.updateAudioInfo({ status: "OFF", level: 0 });
+        }
         this.visualizationEngine.clearCanvas(); //limpa o canvas quando nao ha audio
       }
 
