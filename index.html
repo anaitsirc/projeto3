@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sistema de Visualização de Áudio</title>
     <link rel="stylesheet" href="styles.css" />
-    <!-- Carregar o jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
   </head>
   <body>
     <div id="app">
@@ -18,11 +22,19 @@
         <section id="controls">
           <div class="control-group">
             <h3>Controlos de Áudio</h3>
-            <button id="startMic" class="btn-primary">Iniciar Microfone</button>
-            <button id="stopAudio" class="btn-secondary" disabled>
-              Parar Áudio
+
+            <button id="startMic" class="icon-btn btn-primary">
+              <i class="bi bi-mic-fill"></i> Iniciar Microfone
             </button>
-            <input type="file" id="audioFile" accept="audio/*" />
+            <input type="file" id="audioFile" accept="audio/mp3, audio/wav" />
+
+            <button id="playAudio" class="icon-btn btn-primary" disabled>
+              <i class="bi bi-play-circle-fill"></i> Reproduzir Áudio
+            </button>
+
+            <button id="stopAudio" class="icon-btn btn-secondary" disabled>
+              <i class="bi bi-stop-circle-fill"></i> Parar Áudio
+            </button>
           </div>
 
           <div class="control-group">
@@ -36,8 +48,12 @@
 
           <div class="control-group">
             <h3>Exportação</h3>
-            <button id="exportPNG" class="btn-primary">Exportar PNG</button>
-            <button id="exportJPEG" class="btn-primary">Exportar JPEG</button>
+            <button id="exportPNG" class="icon-btn btn-primary">
+              <i class="bi bi-image"></i> Exportar PNG
+            </button>
+            <button id="exportJPEG" class="icon-btn btn-primary">
+              <i class="bi bi-save"></i> Exportar JPEG
+            </button>
           </div>
         </section>
 
@@ -46,7 +62,7 @@
             id="audioCanvas"
             width="800"
             height="400"
-            style="border: 1px solid white"
+            style="border: 1px solid rgb(0, 0, 0)"
           ></canvas>
           <div id="audioInfo">
             <p id="audioStatus">Áudio: Parado</p>
@@ -60,9 +76,7 @@
 
         <section id="properties-panel">
           <h3>Propriedades da Visualização</h3>
-          <div id="properties-container">
-            <!-- Propriedades dinâmicas serão inseridas aqui -->
-          </div>
+          <div id="properties-container"></div>
         </section>
       </main>
 
