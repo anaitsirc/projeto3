@@ -205,7 +205,7 @@ class UIManager {
       // Usar requestAnimationFrame para updates suaves
       requestAnimationFrame(() => {
         this.$levelBar.css("width", level + "%");
-
+        this.$levelText.text(level + " %");
         // Mudar cor baseado no nível
         if (level > 50) {
           this.$levelBar.css("background-color", "#f72585");

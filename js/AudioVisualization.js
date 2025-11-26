@@ -155,7 +155,7 @@ class AudioVisualization {
     return normalized;
   }
 
-  getDynamicColor(audioLevel) {
+  getDynamicColor(audioLevel, brightness) {
     if (!this.colors.colorByLevel) {
       return {
         primary: this.colors.primary,
@@ -172,7 +172,7 @@ class AudioVisualization {
     // hue = START + (END - START) * level
     const hue = HUE_START + (HUE_END - HUE_START) * level;
     const saturation = 90;
-    const lightness = 60;
+    const lightness = brightness * 100;
 
     // cor HSL interpolada
     const primaryColor = this.hslToCssString(hue, saturation, lightness);

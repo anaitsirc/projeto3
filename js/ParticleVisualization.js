@@ -20,7 +20,7 @@ class ParticleVisualization extends AudioVisualization {
     this.properties.particleBrightness = {
       value: 1,
       min: 0.1,
-      max: 2,
+      max: 1,
       step: 0.1,
     }; //brilho da particula
 
@@ -107,14 +107,14 @@ class ParticleVisualization extends AudioVisualization {
     const audioLevel = this.audioProcessor
       ? this.audioProcessor.calculateAudioLevel() * 100
       : 0;
-    const dynamicColors = this.getDynamicColor(audioLevel);
+    const brightness = this.properties.particleBrightness.value; // PROPRIEDADE
+    const dynamicColors = this.getDynamicColor(audioLevel, brightness);
     // gradiente
     const visualizationStyle = this.createGradient([
       dynamicColors.primary,
       dynamicColors.secondary,
     ]);
     for (const p of this.particles) {
-      const brightness = this.properties.particleBrightness.value; // PROPRIEDADE
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); //arco completo = circulo
       //this.ctx.fillStyle = p.color;
